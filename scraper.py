@@ -64,16 +64,14 @@ class Scraper(object):
         self.driver.execute_script(
             'window.scrollTo(0, document.body.scrollHeight);')
 
-        selector_button = self.driver.find_elements_by_css_selector(
-            'button[class="btn btn-default"]')
-
         while True:
             last_height = self.driver.execute_script(
                 'return document.body.scrollHeight')
             self.driver.execute_script(
                 'window.scrollTo(0, document.body.scrollHeight);')
-            button = self.driver.find_elements_by_css_selector(
-                'button[class="btn btn-default"]')[-1]
+            button = self.get_button()
+            if button is None:
+                break
             button.click()
             print('button text: {}'.format(button.text))
             button_text = button.text
@@ -82,8 +80,9 @@ class Scraper(object):
                     'return document.body.scrollHeight')
                 self.driver.execute_script(
                     'window.scrollTo(0, document.body.scrollHeight);')
-                button = self.driver.find_elements_by_css_selector(
-                    'button[class="btn btn-default"]')[-1]
+                button = self.get_button()
+                if button is None:
+                    break
                 time.sleep(.1)
                 try:
                     button_text = button.text
@@ -99,9 +98,15 @@ class Scraper(object):
         self.driver.close()
         return infos
 
+    def get_button(self):
+        buttons = self.driver.find_elements_by_css_selector(
+            'button[class="btn btn-default"]')
+        if type(buttons) is list:
+            return buttons[-1]
+        else:
+            return None
 
 # c = Scraper()
 # infos = []
-# for _ in range(1000):
+# for _ in range(50):
 #     infos += c.run_scroll()
-
