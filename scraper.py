@@ -59,16 +59,11 @@ class Scraper(object):
         self.driver = webdriver.Chrome(options=self.options)
         self.driver.get(self.url)
 
-        last_height = self.driver.execute_script(
-            'return document.body.scrollHeight')
         self.driver.execute_script(
             'window.scrollTo(0, document.body.scrollHeight);')
-
+        self.scroll_down()
         while True:
-            last_height = self.driver.execute_script(
-                'return document.body.scrollHeight')
-            self.driver.execute_script(
-                'window.scrollTo(0, document.body.scrollHeight);')
+            self.scroll_down()
             button = self.get_button()
             if button is None:
                 break
@@ -76,10 +71,7 @@ class Scraper(object):
             print('button text: {}'.format(button.text))
             button_text = button.text
             while button_text == 'Chargement...':
-                last_height = self.driver.execute_script(
-                    'return document.body.scrollHeight')
-                self.driver.execute_script(
-                    'window.scrollTo(0, document.body.scrollHeight);')
+                self.scroll_down()
                 button = self.get_button()
                 if button is None:
                     break
@@ -98,15 +90,21 @@ class Scraper(object):
         self.driver.close()
         return infos
 
+    def scroll_down(self):
+        self.driver.execute_script(
+            'window.scrollTo(0, document.body.scrollHeight);')
+        return None
+
     def get_button(self):
         buttons = self.driver.find_elements_by_css_selector(
             'button[class="btn btn-default"]')
-        if type(buttons) is list:
+        if type(buttons) is list and len(buttons) > 0:
             return buttons[-1]
         else:
             return None
 
-# c = Scraper()
-# infos = []
-# for _ in range(50):
-#     infos += c.run_scroll()
+c = Scraper()
+infos = []
+for i in range(500):
+    print(i)
+    infos += c.run_scroll()
