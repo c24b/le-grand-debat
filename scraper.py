@@ -29,6 +29,9 @@ class Scraper(object):
         options.add_argument('headless')
         options.add_argument('window-size=1920x1080')
         self.options = options
+        self.driver = webdriver.Chrome(options=self.options)
+        self.driver.get(self.url)
+        time.sleep(3)
 
     def run(self, i=1):
         time.sleep(random.randint(1, 20)/10)
@@ -40,25 +43,12 @@ class Scraper(object):
         driver.close()
         return infos
 
-    @staticmethod
-    def extract_proposal_info(proposal: BeautifulSoup):
-        ellipsis = proposal.find('div', {'class': 'ellipsis'})
-        user_url = ellipsis.a['href']
-        username = ellipsis.a.text
-        date = ellipsis.find_all('span')[-1].text
-        proprosal_a = proposal.find_all('a')[-1]
-        proposal_url = proprosal_a['href']
-        proposal_title = proprosal_a.text
-        return {'username': username,
-                'user_url': user_url,
-                'date': date,
-                'url': proposal_url,
-                'title': proposal_title}
-
     def run_scroll(self):
-        self.driver = webdriver.Chrome(options=self.options)
         self.driver.get(self.url)
-
+        time.sleep(2)
+        print(self.driver.execute_script(
+            'return document.readyState;'
+        ))
         self.driver.execute_script(
             'window.scrollTo(0, document.body.scrollHeight);')
         self.scroll_down()
@@ -87,7 +77,7 @@ class Scraper(object):
         soup = BeautifulSoup(self.driver.page_source)
         proposals = soup.select('div[class*="proposal-preview"]')
         infos = [Scraper.extract_proposal_info(x) for x in proposals]
-        self.driver.close()
+        # self.driver.close()
         return infos
 
     def scroll_down(self):
@@ -103,8 +93,23 @@ class Scraper(object):
         else:
             return None
 
-c = Scraper()
-infos = []
-for i in range(500):
-    print(i)
-    infos += c.run_scroll()
+    @staticmethod
+    def extract_proposal_info(proposal: BeautifulSoup):
+        ellipsis = proposal.find('div', {'class': 'ellipsis'})
+        user_url = ellipsis.a['href']
+        username = ellipsis.a.text
+        date = ellipsis.find_all('span')[-1].text
+        proprosal_a = proposal.find_all('a')[-1]
+        proposal_url = proprosal_a['href']
+        proposal_title = proprosal_a.text
+        return {'username': username,
+                'user_url': user_url,
+                'date': date,
+                'url': proposal_url,
+                'title': proposal_title}
+
+# c = Scraper()
+# infos = []
+# for i in range(500):
+#     print(i)
+#     infos += c.run_scroll()
