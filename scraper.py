@@ -29,7 +29,6 @@ class Scraper(object):
         options.add_argument('headless')
         options.add_argument('window-size=1920x1080')
         self.options = options
-        time.sleep(3)
 
     def run(self, i=1):
         time.sleep(random.randint(1, 20)/10)
@@ -107,8 +106,8 @@ class Scraper(object):
                 'url': proposal_url,
                 'title': proposal_title}
 
-# c = Scraper()
+c = Scraper()
 # infos = []
-for i in range(500):
-    print(i)
-    infos += c.run_scroll()
+# for i in range(500):
+#     print(i)
+#     infos += c.run_scroll()
