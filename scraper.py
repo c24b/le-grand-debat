@@ -29,8 +29,6 @@ class Scraper(object):
         options.add_argument('headless')
         options.add_argument('window-size=1920x1080')
         self.options = options
-        self.driver = webdriver.Chrome(options=self.options)
-        self.driver.get(self.url)
         time.sleep(3)
 
     def run(self, i=1):
@@ -44,6 +42,7 @@ class Scraper(object):
         return infos
 
     def run_scroll(self):
+        self.driver = webdriver.Chrome(options=self.options)
         self.driver.get(self.url)
         time.sleep(2)
         print(self.driver.execute_script(
@@ -77,7 +76,7 @@ class Scraper(object):
         soup = BeautifulSoup(self.driver.page_source)
         proposals = soup.select('div[class*="proposal-preview"]')
         infos = [Scraper.extract_proposal_info(x) for x in proposals]
-        # self.driver.close()
+        self.driver.close()
         return infos
 
     def scroll_down(self):
@@ -110,6 +109,6 @@ class Scraper(object):
 
 # c = Scraper()
 # infos = []
-# for i in range(500):
-#     print(i)
-#     infos += c.run_scroll()
+for i in range(500):
+    print(i)
+    infos += c.run_scroll()
